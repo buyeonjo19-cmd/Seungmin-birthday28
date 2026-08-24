@@ -2,8 +2,11 @@
    SUPABASE 설정
 ===================================== */
 
-const SUPABASE_URL = "https://tvyugimlmiceiaqtkjfn.supabase.co/rest/v1/";
-const SUPABASE_ANON_KEY = "sb_publishable_bEwqlnNI4VKGiSgqaRvqpg_6GEENJ-g";
+const SUPABASE_URL =
+  "https://tvyugimlmiceiaqtkjfn.supabase.co/rest/v1/";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_bEwqlnNI4VKGiSgqaRvqpg_6GEENJ-g";
 
 
 /* =====================================
@@ -194,7 +197,7 @@ cheerForm.addEventListener(
 
 
 /* =====================================
-   롤링페이퍼
+   롤링페이퍼 - SUPABASE
 ===================================== */
 
 const guestbookForm =
@@ -230,7 +233,7 @@ let guestbook = [];
 
 function escapeHTML(text) {
 
-  return text
+  return String(text)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -241,7 +244,69 @@ function escapeHTML(text) {
 
 
 
-/* 메시지 화면 출력 */
+/* =====================================
+   저장된 편지 불러오기
+===================================== */
+
+async function loadGuestbook() {
+
+  try {
+
+    const response = await fetch(
+      `${SUPABASE_URL}guestbook?select=*&order=created_at.desc`,
+      {
+        method: "GET",
+
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization:
+            `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      }
+    );
+
+
+    if (!response.ok) {
+
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        errorText || "편지를 불러오지 못했습니다."
+      );
+
+    }
+
+
+    guestbook =
+      await response.json();
+
+
+    renderMessages();
+
+
+  } catch (error) {
+
+    console.error(
+      "Supabase 불러오기 오류:",
+      error
+    );
+
+    messages.innerHTML = `
+      <div class="loading">
+        편지를 불러오지 못했어요 😢
+      </div>
+    `;
+
+  }
+
+}
+
+
+
+/* =====================================
+   메시지 화면 출력
+===================================== */
 
 function renderMessages() {
 
@@ -265,19 +330,21 @@ function renderMessages() {
 
   messages.innerHTML =
     guestbook
-      .slice()
-      .reverse()
       .map(item => {
 
         return `
           <article class="message-card">
 
             <div class="nickname">
-              💙 ${escapeHTML(item.nickname)}
+              💙 ${escapeHTML(
+                item.nickname
+              )}
             </div>
 
             <p>
-              ${escapeHTML(item.message)}
+              ${escapeHTML(
+                item.message
+              )}
             </p>
 
           </article>
@@ -290,11 +357,14 @@ function renderMessages() {
 
 
 
-/* 메시지 등록 */
+/* =====================================
+   메시지 등록
+   → Supabase에 영구 저장
+===================================== */
 
 guestbookForm.addEventListener(
   "submit",
-  function(event) {
+  async function(event) {
 
     event.preventDefault();
 
@@ -311,23 +381,108 @@ guestbookForm.addEventListener(
     }
 
 
-    guestbook.push({
-      nickname: nickname,
-      message: message
-    });
+    try {
+
+      const response = await fetch(
+        `${SUPABASE_URL}guestbook`,
+        {
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            apikey:
+              SUPABASE_ANON_KEY,
+
+            Authorization:
+              `Bearer ${SUPABASE_ANON_KEY}`,
+
+            Prefer:
+              "return=representation"
+
+          },
+
+          body: JSON.stringify({
+            nickname: nickname,
+            message: message
+          })
+        }
+      );
 
 
-    nicknameInput.value = "";
-    messageInput.value = "";
+      if (!response.ok) {
+
+        const errorText =
+          await response.text();
+
+        throw new Error(
+          errorText || "편지 저장 실패"
+        );
+
+      }
 
 
-    renderMessages();
+      const newMessage =
+        await response.json();
+
+
+      /*
+       * 방금 작성한 편지를
+       * 화면에도 바로 추가
+       */
+
+      if (
+        Array.isArray(newMessage) &&
+        newMessage.length > 0
+      ) {
+
+        guestbook.unshift(
+          newMessage[0]
+        );
+
+      } else {
+
+        guestbook.unshift({
+          nickname: nickname,
+          message: message
+        });
+
+      }
+
+
+      nicknameInput.value = "";
+      messageInput.value = "";
+
+
+      renderMessages();
+
+
+    } catch (error) {
+
+      console.error(
+        "Supabase 저장 오류:",
+        error
+      );
+
+      alert(
+        "편지를 저장하지 못했어요 😢\n잠시 후 다시 시도해주세요."
+      );
+
+    }
 
   }
 );
 
 
-renderMessages();
+
+/* =====================================
+   사이트를 열면
+   Supabase에서 편지 불러오기
+===================================== */
+
+loadGuestbook();
 
 
 
