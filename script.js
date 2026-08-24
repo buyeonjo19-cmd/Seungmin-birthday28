@@ -2,8 +2,8 @@
    SUPABASE 설정
 ===================================== */
 
-const SUPABASE_URL = "https://ybidkvklzttgpkvglmau.supabase.co/rest/v1/";
-const SUPABASE_ANON_KEY = "sb_publishable_8599WhvYReYQKXaLX28HSA_d0H-CnRj";
+const SUPABASE_URL = "https://tvyugimlmiceiaqtkjfn.supabase.co/rest/v1/";
+const SUPABASE_ANON_KEY = "sb_publishable_bEwqlnNI4VKGiSgqaRvqpg_6GEENJ-g";
 
 
 /* =====================================
