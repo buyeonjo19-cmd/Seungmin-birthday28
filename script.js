@@ -16,8 +16,10 @@ async function checkAdmin() {
       "https://tvyugimlmiceiaqtkjfn.supabase.co/auth/v1/user",
       {
         headers: {
-          apikey: SUPABASE_ANON_KEY
-        }
+  apikey: SUPABASE_ANON_KEY,
+  Authorization:
+    `Bearer ${localStorage.getItem("supabase_access_token")}`
+}
       }
     );
 
