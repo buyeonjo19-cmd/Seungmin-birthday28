@@ -565,3 +565,86 @@ makeTicket.addEventListener(
 
   }
 );
+/* =====================================
+   관리자 로그인
+===================================== */
+
+const adminEmailInput =
+  document.getElementById("admin-email");
+
+const adminPasswordInput =
+  document.getElementById("admin-password");
+
+const adminLoginBtn =
+  document.getElementById("admin-login-btn");
+
+
+adminLoginBtn.addEventListener(
+  "click",
+  async function () {
+
+    const email =
+      adminEmailInput.value.trim();
+
+    const password =
+      adminPasswordInput.value;
+
+    if (!email || !password) {
+      alert("이메일과 비밀번호를 입력해주세요.");
+      return;
+    }
+
+    try {
+
+      const response = await fetch(
+        "https://tvyugimlmiceiaqtkjfn.supabase.co/auth/v1/token?grant_type=password",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+            apikey: SUPABASE_ANON_KEY
+          },
+
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("로그인 실패");
+      }
+
+      const data = await response.json();
+
+      localStorage.setItem(
+        "supabase_access_token",
+        data.access_token
+      );
+
+      isAdmin = true;
+
+      alert("관리자 로그인 성공! 🔐");
+
+      adminEmailInput.value = "";
+      adminPasswordInput.value = "";
+
+      renderMessages();
+
+    } catch (error) {
+
+      console.error(
+        "관리자 로그인 오류:",
+        error
+      );
+
+      alert(
+        "로그인에 실패했어요 😢\n이메일이나 비밀번호를 확인해주세요."
+      );
+
+    }
+
+  }
+);
