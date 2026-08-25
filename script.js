@@ -7,6 +7,7 @@ const SUPABASE_URL =
 
 const SUPABASE_ANON_KEY =
   "sb_publishable_bEwqlnNI4VKGiSgqaRvqpg_6GEENJ-g";
+const ADMIN_EMAIL = "buyeonjo19@gmail.com";
 
 
 /* =====================================
