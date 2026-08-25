@@ -8,7 +8,33 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   "sb_publishable_bEwqlnNI4VKGiSgqaRvqpg_6GEENJ-g";
 const ADMIN_EMAIL = "buyeonjo19@gmail.com";
+let currentUser = null;
 
+async function checkAdmin() {
+  try {
+    const response = await fetch(
+      "https://tvyugimlmiceiaqtkjfn.supabase.co/auth/v1/user",
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY
+        }
+      }
+    );
+
+    if (!response.ok) {
+      isAdmin = false;
+      return;
+    }
+
+    currentUser = await response.json();
+
+    isAdmin = currentUser.email === ADMIN_EMAIL;
+
+  } catch (error) {
+    console.error("관리자 확인 오류:", error);
+    isAdmin = false;
+  }
+}
 
 /* =====================================
    D-DAY
@@ -483,7 +509,9 @@ guestbookForm.addEventListener(
    Supabase에서 편지 불러오기
 ===================================== */
 
-loadGuestbook();
+checkAdmin().then(() => {
+  loadGuestbook();
+});
 
 
 
