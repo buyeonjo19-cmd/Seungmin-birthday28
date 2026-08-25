@@ -632,7 +632,9 @@ adminLoginBtn.addEventListener(
           headers: {
             "Content-Type": "application/json",
             apikey: SUPABASE_ANON_KEY
-          },
+         Authorization:
+    `Bearer ${localStorage.getItem("supabase_access_token")}`
+}
 
           body: JSON.stringify({
             email: email,
@@ -652,7 +654,7 @@ adminLoginBtn.addEventListener(
         data.access_token
       );
 
-      isAdmin = true;
+      await checkAdmin();
 
       alert("관리자 로그인 성공! 🔐");
 
