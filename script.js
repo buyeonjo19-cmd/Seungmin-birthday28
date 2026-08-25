@@ -111,17 +111,21 @@ setInterval(
    응원 전광판
 ===================================== */
 
+/* =====================================
+  응원 전광판 - SUPABASE 저장
+===================================== */
+
 const cheerDisplay =
-  document.getElementById("cheer-display");
+document.getElementById("cheer-display");
 
 const cheerInput =
-  document.getElementById("cheer-input");
+document.getElementById("cheer-input");
 
 const cheerForm =
-  document.getElementById("cheer-form");
+document.getElementById("cheer-form");
 
 const cheerCount =
-  document.getElementById("cheer-count");
+document.getElementById("cheer-count");
 
 
 let cheers = [
@@ -133,6 +137,8 @@ let cheers = [
 
 let cheerIndex = 0;
 
+
+/* 응원 문구 화면에 보여주기 */
 
 function showCheer(text) {
 
@@ -150,15 +156,90 @@ function showCheer(text) {
 }
 
 
+/* Supabase에서 응원 문구 불러오기 */
+
+async function loadCheers() {
+
+  try {
+
+    const response = await fetch(
+      `${SUPABASE_URL}cheers?select=*&order=created_at.desc`,
+      {
+        method: "GET",
+
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization:
+            `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      }
+    );
+
+
+    if (!response.ok) {
+      throw new Error(
+        await response.text()
+      );
+    }
+
+
+    const savedCheers =
+      await response.json();
+
+
+    /* 저장된 응원 문구가 있으면 사용 */
+
+    if (
+      Array.isArray(savedCheers) &&
+      savedCheers.length > 0
+    ) {
+
+      cheers =
+        savedCheers.map(
+          item => item.text
+        );
+
+    }
+
+
+    cheerCount.textContent =
+      `${cheers.length} CHEERS`;
+
+
+    if (cheers.length > 0) {
+      showCheer(cheers[0]);
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Supabase 응원 문구 불러오기 오류:",
+      error
+    );
+
+    cheerCount.textContent =
+      `${cheers.length} CHEERS`;
+
+  }
+
+}
+
+
+/* 응원 문구 자동 넘기기 */
+
 setInterval(() => {
 
   if (cheers.length === 0) return;
+
 
   showCheer(
     cheers[cheerIndex]
   );
 
+
   cheerIndex++;
+
 
   if (cheerIndex >= cheers.length) {
     cheerIndex = 0;
@@ -167,32 +248,97 @@ setInterval(() => {
 }, 4000);
 
 
-
 /* 응원 문구 등록 */
 
 cheerForm.addEventListener(
   "submit",
-  function(event) {
+  async function(event) {
 
     event.preventDefault();
+
 
     const text =
       cheerInput.value.trim();
 
+
     if (!text) return;
 
 
-    cheers.unshift(text);
+    try {
 
-    cheerCount.textContent =
-      `${cheers.length} CHEERS`;
+      const response = await fetch(
+        `${SUPABASE_URL}cheers`,
+        {
+          method: "POST",
 
-    showCheer(text);
+          headers: {
 
-    cheerInput.value = "";
+            "Content-Type":
+              "application/json",
+
+            apikey:
+              SUPABASE_ANON_KEY,
+
+            Authorization:
+              `Bearer ${SUPABASE_ANON_KEY}`,
+
+            Prefer:
+              "return=representation"
+
+          },
+
+          body: JSON.stringify({
+            text: text
+          })
+        }
+      );
+
+
+      if (!response.ok) {
+
+        const errorText =
+          await response.text();
+
+        throw new Error(
+          errorText ||
+          "응원 문구 저장 실패"
+        );
+
+      }
+
+
+      /* 화면에도 바로 추가 */
+
+      cheers.unshift(text);
+
+      cheerCount.textContent =
+        `${cheers.length} CHEERS`;
+
+      showCheer(text);
+
+      cheerInput.value = "";
+
+
+    } catch (error) {
+
+      console.error(
+        "Supabase 응원 문구 저장 오류:",
+        error
+      );
+
+      alert(
+        "응원 문구를 저장하지 못했어요 😢\n잠시 후 다시 시도해주세요."
+      );
+
+    }
 
   }
 );
+
+
+/* 사이트를 열면 저장된 응원 문구 불러오기 */
+
+loadCheers();
 
 
 
