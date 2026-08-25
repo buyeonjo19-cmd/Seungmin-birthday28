@@ -1,9 +1,7 @@
 /* =====================================
-  SUPABASE 설정
+   SUPABASE 설정
 ===================================== */
 
-const SUPABASE_URL = "https://tvyugimlmiceiaqtkjfn.supabase.co/rest/v1/";
-const SUPABASE_ANON_KEY = "sb_publishable_bEwqlnNI4VKGiSgqaRvqpg_6GEENJ-g";
 const SUPABASE_URL =
   "https://tvyugimlmiceiaqtkjfn.supabase.co/rest/v1/";
 
@@ -12,90 +10,90 @@ const SUPABASE_ANON_KEY =
 
 
 /* =====================================
-  D-DAY
+   D-DAY
 ===================================== */
 
 function updateCountdown() {
 
-const now = new Date();
+  const now = new Date();
 
-let target = new Date(
-now.getFullYear(),
-7,
-26,
-0,
-0,
-0
-);
+  let target = new Date(
+    now.getFullYear(),
+    7,
+    26,
+    0,
+    0,
+    0
+  );
 
-// 올해 생일이 지나면 내년 생일
-if (now > target) {
-target = new Date(
-now.getFullYear() + 1,
-7,
-26,
-0,
-0,
-0
-);
-}
+  // 올해 생일이 지나면 내년 생일
+  if (now > target) {
+    target = new Date(
+      now.getFullYear() + 1,
+      7,
+      26,
+      0,
+      0,
+      0
+    );
+  }
 
-const difference = target - now;
+  const difference = target - now;
 
-const day = Math.floor(
-difference / (1000 * 60 * 60 * 24)
-);
+  const day = Math.floor(
+    difference / (1000 * 60 * 60 * 24)
+  );
 
-const hour = Math.floor(
-(difference / (1000 * 60 * 60)) % 24
-);
+  const hour = Math.floor(
+    (difference / (1000 * 60 * 60)) % 24
+  );
 
-const minute = Math.floor(
-(difference / (1000 * 60)) % 60
-);
+  const minute = Math.floor(
+    (difference / (1000 * 60)) % 60
+  );
 
-const second = Math.floor(
-(difference / 1000) % 60
-);
-
-
-document.getElementById("days").textContent =
-String(day).padStart(2, "0");
-
-document.getElementById("hours").textContent =
-String(hour).padStart(2, "0");
-
-document.getElementById("minutes").textContent =
-String(minute).padStart(2, "0");
-
-document.getElementById("seconds").textContent =
-String(second).padStart(2, "0");
+  const second = Math.floor(
+    (difference / 1000) % 60
+  );
 
 
-// 8월 26일이면 특별 문구
-if (
-now.getMonth() === 7 &&
-now.getDate() === 26
-) {
+  document.getElementById("days").textContent =
+    String(day).padStart(2, "0");
 
-document.getElementById(
-"countdown-title"
-).textContent =
-"TODAY IS SEUNGMIN DAY! 💙";
+  document.getElementById("hours").textContent =
+    String(hour).padStart(2, "0");
 
-document.getElementById(
-"countdown"
-).innerHTML = `
-     <strong
-       style="
-         font-family:Jua;
-         font-size:28px;
-       "
-     >
-       HAPPY BIRTHDAY 🎂
-     </strong>
-   `;
-}
+  document.getElementById("minutes").textContent =
+    String(minute).padStart(2, "0");
+
+  document.getElementById("seconds").textContent =
+    String(second).padStart(2, "0");
+
+
+  // 8월 26일이면 특별 문구
+  if (
+    now.getMonth() === 7 &&
+    now.getDate() === 26
+  ) {
+
+    document.getElementById(
+      "countdown-title"
+    ).textContent =
+      "TODAY IS SEUNGMIN DAY! 💙";
+
+    document.getElementById(
+      "countdown"
+    ).innerHTML = `
+      <strong
+        style="
+          font-family:Jua;
+          font-size:28px;
+        "
+      >
+        HAPPY BIRTHDAY 🎂
+      </strong>
+    `;
+  }
 
 }
 
@@ -103,34 +101,34 @@ document.getElementById(
 updateCountdown();
 
 setInterval(
-updateCountdown,
-1000
+  updateCountdown,
+  1000
 );
 
 
 
 /* =====================================
-  응원 전광판
+   응원 전광판
 ===================================== */
 
 const cheerDisplay =
-document.getElementById("cheer-display");
+  document.getElementById("cheer-display");
 
 const cheerInput =
-document.getElementById("cheer-input");
+  document.getElementById("cheer-input");
 
 const cheerForm =
-document.getElementById("cheer-form");
+  document.getElementById("cheer-form");
 
 const cheerCount =
-document.getElementById("cheer-count");
+  document.getElementById("cheer-count");
 
 
 let cheers = [
-"HAPPY BIRTHDAY, SEUNGMIN!",
-"승민아 생일 축하해!",
-"우리의 #28 💙",
-"ALWAYS CHEER FOR #28!"
+  "HAPPY BIRTHDAY, SEUNGMIN!",
+  "승민아 생일 축하해!",
+  "우리의 #28 💙",
+  "ALWAYS CHEER FOR #28!"
 ];
 
 let cheerIndex = 0;
@@ -138,38 +136,94 @@ let cheerIndex = 0;
 
 function showCheer(text) {
 
-@@ -194,218 +197,370 @@
+  cheerDisplay.style.opacity = "0";
+
+  setTimeout(() => {
+
+    cheerDisplay.textContent =
+      text.toUpperCase();
+
+    cheerDisplay.style.opacity = "1";
+
+  }, 200);
+
+}
+
+
+setInterval(() => {
+
+  if (cheers.length === 0) return;
+
+  showCheer(
+    cheers[cheerIndex]
+  );
+
+  cheerIndex++;
+
+  if (cheerIndex >= cheers.length) {
+    cheerIndex = 0;
+  }
+
+}, 4000);
+
+
+
+/* 응원 문구 등록 */
+
+cheerForm.addEventListener(
+  "submit",
+  function(event) {
+
+    event.preventDefault();
+
+    const text =
+      cheerInput.value.trim();
+
+    if (!text) return;
+
+
+    cheers.unshift(text);
+
+    cheerCount.textContent =
+      `${cheers.length} CHEERS`;
+
+    showCheer(text);
+
+    cheerInput.value = "";
+
+  }
+);
+
 
 
 /* =====================================
-   롤링페이퍼
    롤링페이퍼 - SUPABASE
 ===================================== */
 
 const guestbookForm =
-document.getElementById(
-"guestbook-form"
-);
+  document.getElementById(
+    "guestbook-form"
+  );
 
 const nicknameInput =
-document.getElementById(
-"nickname"
-);
+  document.getElementById(
+    "nickname"
+  );
 
 const messageInput =
-document.getElementById(
-"message"
-);
+  document.getElementById(
+    "message"
+  );
 
 const messages =
-document.getElementById(
-"messages"
-);
+  document.getElementById(
+    "messages"
+  );
 
 const messageCount =
-document.getElementById(
-"message-count"
-);
+  document.getElementById(
+    "message-count"
+  );
 
 
 let guestbook = [];
@@ -179,19 +233,17 @@ let guestbook = [];
 
 function escapeHTML(text) {
 
-  return text
   return String(text)
-.replace(/&/g, "&amp;")
-.replace(/</g, "&lt;")
-.replace(/>/g, "&gt;")
-.replace(/"/g, "&quot;")
-.replace(/'/g, "&#039;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
 }
 
 
 
-/* 메시지 화면 출력 */
 /* =====================================
    저장된 편지 불러오기
 ===================================== */
@@ -258,87 +310,77 @@ async function loadGuestbook() {
 
 function renderMessages() {
 
-messageCount.textContent =
-String(
-guestbook.length
-).padStart(3, "0");
+  messageCount.textContent =
+    String(
+      guestbook.length
+    ).padStart(3, "0");
 
 
-if (guestbook.length === 0) {
+  if (guestbook.length === 0) {
 
-messages.innerHTML = `
-     <div class="loading">
-       첫 번째 편지를 남겨주세요 💌
-     </div>
-   `;
+    messages.innerHTML = `
+      <div class="loading">
+        첫 번째 편지를 남겨주세요 💌
+      </div>
+    `;
 
-return;
-}
+    return;
+  }
 
 
-messages.innerHTML =
-guestbook
-      .slice()
-      .reverse()
-.map(item => {
+  messages.innerHTML =
+    guestbook
+      .map(item => {
 
-return `
-         <article class="message-card">
+        return `
+          <article class="message-card">
 
-           <div class="nickname">
-              💙 ${escapeHTML(item.nickname)}
+            <div class="nickname">
               💙 ${escapeHTML(
                 item.nickname
               )}
-           </div>
+            </div>
 
-           <p>
-              ${escapeHTML(item.message)}
+            <p>
               ${escapeHTML(
                 item.message
               )}
-           </p>
+            </p>
 
-         </article>
-       `;
+          </article>
+        `;
 
-})
-.join("");
+      })
+      .join("");
 
 }
 
 
 
-/* 메시지 등록 */
 /* =====================================
    메시지 등록
    → Supabase에 영구 저장
 ===================================== */
 
 guestbookForm.addEventListener(
-"submit",
-  function(event) {
+  "submit",
   async function(event) {
 
-event.preventDefault();
+    event.preventDefault();
 
 
-const nickname =
-nicknameInput.value.trim();
+    const nickname =
+      nicknameInput.value.trim();
 
-const message =
-messageInput.value.trim();
-
-
-if (!nickname || !message) {
-return;
-}
+    const message =
+      messageInput.value.trim();
 
 
-    guestbook.push({
-      nickname: nickname,
-      message: message
-    });
+    if (!nickname || !message) {
+      return;
+    }
+
+
     try {
 
       const response = await fetch(
@@ -346,14 +388,11 @@ return;
         {
           method: "POST",
 
-    nicknameInput.value = "";
-    messageInput.value = "";
           headers: {
 
             "Content-Type":
               "application/json",
 
-    renderMessages();
             apikey:
               SUPABASE_ANON_KEY,
 
@@ -433,11 +472,10 @@ return;
 
     }
 
-}
+  }
 );
 
 
-renderMessages();
 
 /* =====================================
    사이트를 열면
@@ -449,80 +487,80 @@ loadGuestbook();
 
 
 /* =====================================
-  가상 티켓
+   가상 티켓
 ===================================== */
 
 const ticketName =
-document.getElementById(
-"ticket-name"
-);
+  document.getElementById(
+    "ticket-name"
+  );
 
 const ticketOwner =
-document.getElementById(
-"ticket-owner"
-);
+  document.getElementById(
+    "ticket-owner"
+  );
 
 const ticketCode =
-document.getElementById(
-"ticket-code"
-);
+  document.getElementById(
+    "ticket-code"
+  );
 
 const makeTicket =
-document.getElementById(
-"make-ticket"
-);
+  document.getElementById(
+    "make-ticket"
+  );
 
 const ticketCard =
-document.getElementById(
-"ticket-card"
-);
+  document.getElementById(
+    "ticket-card"
+  );
 
 
 makeTicket.addEventListener(
-"click",
-function() {
+  "click",
+  function() {
 
-let name =
-ticketName.value.trim();
-
-
-if (!name) {
-name = "YOUR NAME";
-}
+    let name =
+      ticketName.value.trim();
 
 
-const randomNumber =
-Math.floor(
-Math.random() * 900
-) + 100;
+    if (!name) {
+      name = "YOUR NAME";
+    }
 
 
-ticketOwner.textContent =
-name.toUpperCase();
+    const randomNumber =
+      Math.floor(
+        Math.random() * 900
+      ) + 100;
 
 
-ticketCode.textContent =
-`28-0826-${randomNumber}`;
+    ticketOwner.textContent =
+      name.toUpperCase();
 
 
-ticketCard.animate(
-[
-{
-transform:
-"rotate(2deg) scale(0.96)"
-},
+    ticketCode.textContent =
+      `28-0826-${randomNumber}`;
 
-{
-transform:
-"rotate(0deg) scale(1)"
-}
-],
-{
-duration: 500,
-easing:
-"cubic-bezier(.2,.8,.2,1)"
-}
-);
 
-}
+    ticketCard.animate(
+      [
+        {
+          transform:
+            "rotate(2deg) scale(0.96)"
+        },
+
+        {
+          transform:
+            "rotate(0deg) scale(1)"
+        }
+      ],
+      {
+        duration: 500,
+        easing:
+          "cubic-bezier(.2,.8,.2,1)"
+      }
+    );
+
+  }
 );
