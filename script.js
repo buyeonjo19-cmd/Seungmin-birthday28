@@ -225,7 +225,7 @@ const messageCount =
   document.getElementById(
     "message-count"
   );
-
+let isAdmin = false;
 
 let guestbook = [];
 
